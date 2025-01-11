@@ -3,28 +3,29 @@ agenda = {}
 
 # Função para adicionar atividade
 def adicionar_atividade(dia, hora, atividade):
-   if dia not in agenda:
- agenda[dia].append((hora, atividade))
+    if dia not in agenda:
+          agenda[dia] = []
+    agenda[dia].append((hora, atividade))
 
 # Função para exibir atividades de um dia
 def exibir_atividades_dia(dia):
-   if dia in agenda:
-       atividades = agenda[dia]
-       atividades.sort() # Ordenar por horário
-       return "\n".join([f"{hora}:{atividade}" for hora, atividade in atividades])
-   else:
+    if dia in agenda:
+        atividades = agenda[dia]
+        atividades.sort() # Ordenar por horário
+        return "\n".join([f"{hora}:{atividade}" for hora, atividade in atividades])
+    else:
         return "Agenda livre"
 
 # Função para exibir atividades de uma semana
 def exibir_atividades_semana(semana):
-       inicio = (semana - 1) * 7 + 1
-       fim = inicio + 6
-       atividades_semana = []
-       for dia in range(inicio, fim + 1):
-           dia_str = str(dia)
-           atividades = exibir_atividades_dia(dia_str)
-           atividades_semana.append(f"Dia{dia_str}:\n{atividades}")
-       return "\n\n".join(atividades_semana)
+    inicio = (semana - 1) * 7 + 1
+    fim = inicio + 6
+    atividades_semana = []
+    for dia in range(inicio, fim + 1):
+        dia_str = str(dia)
+        atividades = exibir_atividades_dia(dia_str)
+        atividades_semana.append(f"Dia{dia_str}:\n{atividades}")
+    return "\n\n".join(atividades_semana)
 
 # Função para interação com o usuário
 def interagir():
@@ -45,17 +46,18 @@ def interagir():
 
          elif opcao == '2':
              dia = input("Informe o dia (ex: 12):")
-             atividdades = exibir_atividades_dia(dia)
+             atividades = exibir_atividades_dia(dia)
              print(f"Atividades para o dia {dia}: \n{atividades}")
 
          elif opcao == '3':
-            semana = int(input("Informe o número da semana (ex: 1): "))
-            atividades_semana = exibir_atividades_semana(semana)
-            print(f"Atividades para a semana {semana}: \n{atividades_semana}")
+             semana = int(input("Informe o número da semana (ex: 1): "))
+             atividades_semana = exibir_atividades_semana(semana)
+             print(f"Atividades para a semana {semana}: \n{atividades_semana}")
 
          elif opcao == '4':
              print("Saindo...")
              break
+
          else:
              print("Opção inválida: Tente novamente.")
 
