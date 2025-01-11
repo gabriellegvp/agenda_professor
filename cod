@@ -1,0 +1,23 @@
+from datetime import datatime
+agenda = {}
+  
+def adicionar_atividade(dia, hora, atividade):
+   if dia not in agenda:
+ agenda[dia].append((hora, atividade))
+
+def exibir_atividades_dia(dia):
+   if dia in agenda:
+       atividades = agenda[dia]
+       atividades.sort() # Ordenar por horário
+       return "\n".join([f"{hora}:{atividade}" for hora, atividade in atividades})
+   else:
+        return "Agenda livre"
+  def exibir_atividades_semana(semana):
+       inicio = (semana - 1) * 7 + 1
+       fim = inicio + 6
+       atividades_semana = []
+       for dia in range(inicio, fim + 1):
+           dia_str = str(dia)
+           atividades = exibir_atividades_dia(dia_str)
+           atividades_semana.append(f"Dia{dia_str}:\n{atividades}")
+       return "\n\n".join(atividades_semana)
