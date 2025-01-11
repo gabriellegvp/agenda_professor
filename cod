@@ -12,7 +12,8 @@ def exibir_atividades_dia(dia):
        return "\n".join([f"{hora}:{atividade}" for hora, atividade in atividades})
    else:
         return "Agenda livre"
-  def exibir_atividades_semana(semana):
+
+def exibir_atividades_semana(semana):
        inicio = (semana - 1) * 7 + 1
        fim = inicio + 6
        atividades_semana = []
@@ -21,3 +22,13 @@ def exibir_atividades_dia(dia):
            atividades = exibir_atividades_dia(dia_str)
            atividades_semana.append(f"Dia{dia_str}:\n{atividades}")
        return "\n\n".join(atividades_semana)
+
+def interagir():
+    while True:
+         print("\n--- AGENDA INTERATIVA---")
+         print("1. Adicionar atividade")
+         print("2. Consultar atividades de um dia")
+         print("3. Consultar atividade de uma semana")
+         print("4. Sair")
+         opcao = input("Escolha uma opção:")
+if __name__ == "__main__": interagir()
