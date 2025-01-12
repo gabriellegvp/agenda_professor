@@ -1,65 +1,110 @@
-from datetime import datetime
+import json
+
 agenda = {}
 
+# Função para salvar a agenda em um arquivo 
+def salvar_agenda():
+    with open("agenda.json", "w") as arquivo:
+        json.dump(agenda, arquivo)
+    print("Agenda salva com sucesso!")
+
+# Função para carregar a agenda de um arquivo
+def carregar_agenda():
+    global agenda
+    try:
+        with open("agenda.json", "r") as arquivo:
+            agenda = json.load(arquivo)
+        print("Agenda carregada com sucesso!")
+    except FileNotFoundError:
+        print("Nenhuma agenda encontrada. Criando uma nova...")
+
 # Função para adicionar atividade
-def adicionar_atividade(dia, hora, atividade):
-    if dia not in agenda:
-          agenda[dia] = []
-    agenda[dia].append((hora, atividade))
+def adicionar_atividade(dia, mes, hora, atividade):
+    if mes not in agenda:
+        agenda[mes] = {}
+    if dia not in agenda[mes]:
+        agenda[mes][dia] = []
+    agenda[mes][dia].append((hora,atividade))
+    print("Atividade adicionada com sucesso!")
+    salvar_agenda()
 
 # Função para exibir atividades de um dia
-def exibir_atividades_dia(dia):
-    if dia in agenda:
-        atividades = agenda[dia]
+def exibir_atividades_dia(dia, mes):
+    if mes in agenda and dia in agenda[mes]:
+        atividades = agenda[mes][dia]
         atividades.sort() # Ordenar por horário
         return "\n".join([f"{hora}:{atividade}" for hora, atividade in atividades])
     else:
         return "Agenda livre"
 
 # Função para exibir atividades de uma semana
-def exibir_atividades_semana(semana):
+def exibir_atividades_semana(semana, mes):
     inicio = (semana - 1) * 7 + 1
-    fim = inicio + 6
+    fim = min(inicio + 6, 31) # Garantir que não passe de 31
     atividades_semana = []
     for dia in range(inicio, fim + 1):
         dia_str = str(dia)
-        atividades = exibir_atividades_dia(dia_str)
+        atividades = exibir_atividades_dia(dia_str, mes)
         atividades_semana.append(f"Dia{dia_str}:\n{atividades}")
     return "\n\n".join(atividades_semana)
 
+# Função para limpar atividades de um dia
+def limpar_dia(dia, mes):
+    if mes in agenda and dia in agenda[mes]:
+        del agenda[mes][dia]
+        print(f"Todas as atividades de {mes} foram apagadas.")
+        salvar_agenda()
+    else:
+        print(f"Não há atividades no mês{mes}.")
+
+# Função para limpar atividades de uma semana
+def limpar_semana(semana, mes):
+    inicio = (semana - 1) * 7 + 1
+    fim = min(inicio + 6, 31)
+    if mes in agenda:
+        for dia in range(inicio, fim +1):
+            dia_str = str(dia)
+            if dia_str in agenda[mes]:
+                del agenda[mes][dia_str]
+        if not agenda[mes]: # Remove o mês se estiver vazio
+            del agenda[mes]
+        print(f"Atividades da semana{semana} em {mes} foram apagadas.")
+        salvar_agenda()
+    else:
+        print(f"Não há atividades no mês {mes} para a semana {semana}.")
+
 # Função para interação com o usuário
 def interagir():
+    carregar_agenda()
     while True:
-         print("\n--- AGENDA INTERATIVA---")
-         print("1. Adicionar atividade")
-         print("2. Consultar atividades de um dia")
-         print("3. Consultar atividade de uma semana")
-         print("4. Sair")
-         opcao = input("Escolha uma opção:")
+        print("\n--- AGENDA INTERATIVA ---")
+        print("1. Adicionar atividade")
+        print("2. Consultar atividades de um dia")
+        print("3. Consultar atividades de uma semana")
+        print("4. Limpar atividades de um dia")
+        print("5. Limpar atividades de um mês")
+        print("6. Limpar atividades de uma semana")
+        print("7. Sair")
+        opcao = input("Escolha uma opção:")
 
-         if opcao == '1':
-             dia = input("Informe o dia (ex: 12): ")
-             hora = input("Informe o horário (ex: 12h): ")
-             atividade = input("Descreva a atividade: ")
-             adicionar_atividade(dia, hora, atividade)
-             print(f"Atividadde adicionada com sucesso!")
+        if opcao == '1':
+            mes = input("Informe o mês (ex: Janeiro): ")
+            dia = input("Informe o dia (1-31): ")
+            hora = input("Informe o horário (ex: 12h): ")
+            atividade = input("Descreva a atividade: ")
+            adicionar_atividade(dia, mes, hora, atividade)
+        
+        elif opcao == '2':
+            mes = input("Informe o mês: (ex: Janeiro): ")
+            dia = input("Informe o dia (1-31): ")
+            atividades = exibir_atividades_dia(dia, mes)
+            print(f"Atividades para o dia {dia} de {mes}:\n{atividades}")
 
-         elif opcao == '2':
-             dia = input("Informe o dia (ex: 12):")
-             atividades = exibir_atividades_dia(dia)
-             print(f"Atividades para o dia {dia}: \n{atividades}")
-
-         elif opcao == '3':
-             semana = int(input("Informe o número da semana (ex: 1): "))
-             atividades_semana = exibir_atividades_semana(semana)
-             print(f"Atividades para a semana {semana}: \n{atividades_semana}")
-
-         elif opcao == '4':
-             print("Saindo...")
-             break
-
-         else:
-             print("Opção inválida: Tente novamente.")
-
-if __name__ == "__main__": 
-    interagir()
+        elif opcao == '3':
+            mes = input("Informe o mês (ex: Janeiro): ")
+            try:
+                semana = int(input("Informe o numero da semana (1-5): "))
+                atividades_semana = exibir_atividades_semana(semana, mes)
+                print(f"Atividades para a semana {semana} de {mes}:\n{atividades_semana}")
+            except ValueError:
+                print("Número da semana inválido. Tente novamente")
