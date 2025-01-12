@@ -103,8 +103,36 @@ def interagir():
         elif opcao == '3':
             mes = input("Informe o mês (ex: Janeiro): ")
             try:
-                semana = int(input("Informe o numero da semana (1-5): "))
+                semana = int(input("Informe o número da semana (1-5): "))
                 atividades_semana = exibir_atividades_semana(semana, mes)
                 print(f"Atividades para a semana {semana} de {mes}:\n{atividades_semana}")
             except ValueError:
                 print("Número da semana inválido. Tente novamente")
+
+        elif opcao == '4':
+            mes = input("Informe o mês (ex: Janeiro): ")
+            dia = input("Informe o dia (1-31): ")
+            limpar_dia(dia, mes)
+
+        elif opcao == '5':
+            mes = input("Informe o mês (ex: Janeiro): ")
+            limpar_mes(mes)
+
+        elif opcao == '6':
+            mes = input("Informe o mês (ex: Janeiro): ")
+            try:
+                semana = int(input("Infomre o número da semana (1-5):"))
+                limpar_semana(semana, mes)
+            except ValueError:
+                print("Número da semana inválido. Tente novamente.")
+        
+        elif opcao == '7':
+            print("Saido...")
+            salvar_agenda
+            break
+        
+        else:
+            print("Opção inválida. Tente novamente.")
+
+if __name__ == "__main__":
+    interagir()
