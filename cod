@@ -2,7 +2,7 @@ import json
 
 agenda = {}
 
-# Função para salvar a agenda em um arquivo 
+# Função para salvar a agenda em um arquivo e utilizar de forma simplificada
 def salvar_agenda():
     with open("agenda.json", "w") as arquivo:
         json.dump(agenda, arquivo)
