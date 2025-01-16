@@ -1,8 +1,10 @@
 import json
+from datetime import datetime, timedelta
+import time
 
 agenda = {}
 
-# Função para salvar a agenda em um arquivo e utilizar de forma simplificada
+# Função para salvar a agenda em um arquivo
 def salvar_agenda():
     with open("agenda.json", "w") as arquivo:
         json.dump(agenda, arquivo)
@@ -24,7 +26,7 @@ def adicionar_atividade(dia, mes, hora, atividade):
         agenda[mes] = {}
     if dia not in agenda[mes]:
         agenda[mes][dia] = []
-    agenda[mes][dia].append((hora,atividade))
+    agenda[mes][dia].append((hora, atividade))
     print("Atividade adicionada com sucesso!")
     salvar_agenda()
 
@@ -32,46 +34,77 @@ def adicionar_atividade(dia, mes, hora, atividade):
 def exibir_atividades_dia(dia, mes):
     if mes in agenda and dia in agenda[mes]:
         atividades = agenda[mes][dia]
-        atividades.sort() # Ordenar por horário
-        return "\n".join([f"{hora}:{atividade}" for hora, atividade in atividades])
+        atividades.sort()  # Ordenar por horário
+        return "\n".join([f"{hora}: {atividade}" for hora, atividade in atividades])
     else:
         return "Agenda livre"
 
 # Função para exibir atividades de uma semana
 def exibir_atividades_semana(semana, mes):
     inicio = (semana - 1) * 7 + 1
-    fim = min(inicio + 6, 31) # Garantir que não passe de 31
+    fim = min(inicio + 6, 31)
     atividades_semana = []
     for dia in range(inicio, fim + 1):
         dia_str = str(dia)
         atividades = exibir_atividades_dia(dia_str, mes)
-        atividades_semana.append(f"Dia{dia_str}:\n{atividades}")
+        atividades_semana.append(f"Dia {dia_str}:\n{atividades}")
     return "\n\n".join(atividades_semana)
 
 # Função para limpar atividades de um dia
 def limpar_dia(dia, mes):
     if mes in agenda and dia in agenda[mes]:
         del agenda[mes][dia]
-        print(f"Todas as atividades de {mes} foram apagadas.")
+        print(f"Todas as atividades do dia {dia} de {mes} foram apagadas.")
         salvar_agenda()
     else:
-        print(f"Não há atividades no mês{mes}.")
+        print(f"Não há atividades no dia {dia} de {mes}.")
+
+# Função para limpar atividades de um mês
+def limpar_mes(mes):
+    if mes in agenda:
+        del agenda[mes]
+        print(f"Todas as atividades do mês {mes} foram apagadas.")
+        salvar_agenda()
+    else:
+        print(f"Não há atividades no mês {mes}.")
 
 # Função para limpar atividades de uma semana
 def limpar_semana(semana, mes):
     inicio = (semana - 1) * 7 + 1
     fim = min(inicio + 6, 31)
     if mes in agenda:
-        for dia in range(inicio, fim +1):
+        for dia in range(inicio, fim + 1):
             dia_str = str(dia)
             if dia_str in agenda[mes]:
                 del agenda[mes][dia_str]
-        if not agenda[mes]: # Remove o mês se estiver vazio
+        if not agenda[mes]:  # Remove o mês se estiver vazio
             del agenda[mes]
-        print(f"Atividades da semana{semana} em {mes} foram apagadas.")
+        print(f"Atividades da semana {semana} em {mes} foram apagadas.")
         salvar_agenda()
     else:
         print(f"Não há atividades no mês {mes} para a semana {semana}.")
+
+# Função para verificar notificações
+def verificar_notificacoes():
+    agora = datetime.now()
+    proximas_atividades = []
+    for mes, dias in agenda.items():
+        for dia, atividades in dias.items():
+            for hora, atividade in atividades:
+                try:
+                    # Converte para datetime
+                    data_atividade = datetime.strptime(f"{dia} {mes} {hora}", "%d %B %Hh")
+                    if agora <= data_atividade <= agora + timedelta(minutes=10):
+                        proximas_atividades.append((data_atividade, atividade))
+                except ValueError:
+                    pass  # Ignora erros de formatação
+    if proximas_atividades:
+        print("\n--- NOTIFICAÇÕES ---")
+        for data, atividade in proximas_atividades:
+            print(f"Atividade próxima às {data.strftime('%H:%M')} - {atividade}")
+        print("----------------------")
+    else:
+        print("Nenhuma atividade próxima.")
 
 # Função para interação com o usuário
 def interagir():
@@ -84,8 +117,9 @@ def interagir():
         print("4. Limpar atividades de um dia")
         print("5. Limpar atividades de um mês")
         print("6. Limpar atividades de uma semana")
-        print("7. Sair")
-        opcao = input("Escolha uma opção:")
+        print("7. Verificar notificações")
+        print("8. Sair")
+        opcao = input("Escolha uma opção: ")
 
         if opcao == '1':
             mes = input("Informe o mês (ex: Janeiro): ")
@@ -93,9 +127,9 @@ def interagir():
             hora = input("Informe o horário (ex: 12h): ")
             atividade = input("Descreva a atividade: ")
             adicionar_atividade(dia, mes, hora, atividade)
-        
+
         elif opcao == '2':
-            mes = input("Informe o mês: (ex: Janeiro): ")
+            mes = input("Informe o mês (ex: Janeiro): ")
             dia = input("Informe o dia (1-31): ")
             atividades = exibir_atividades_dia(dia, mes)
             print(f"Atividades para o dia {dia} de {mes}:\n{atividades}")
@@ -107,7 +141,7 @@ def interagir():
                 atividades_semana = exibir_atividades_semana(semana, mes)
                 print(f"Atividades para a semana {semana} de {mes}:\n{atividades_semana}")
             except ValueError:
-                print("Número da semana inválido. Tente novamente")
+                print("Número da semana inválido. Tente novamente.")
 
         elif opcao == '4':
             mes = input("Informe o mês (ex: Janeiro): ")
@@ -121,16 +155,19 @@ def interagir():
         elif opcao == '6':
             mes = input("Informe o mês (ex: Janeiro): ")
             try:
-                semana = int(input("Infomre o número da semana (1-5):"))
+                semana = int(input("Informe o número da semana (1-5): "))
                 limpar_semana(semana, mes)
             except ValueError:
                 print("Número da semana inválido. Tente novamente.")
-        
+
         elif opcao == '7':
-            print("Saido...")
-            salvar_agenda
+            verificar_notificacoes()
+
+        elif opcao == '8':
+            print("Saindo...")
+            salvar_agenda()
             break
-        
+
         else:
             print("Opção inválida. Tente novamente.")
 
