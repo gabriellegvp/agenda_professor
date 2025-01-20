@@ -18,4 +18,4 @@ Armazenamento de Notas e Presenças: Controle simples e acessível para o acompa
 1. Certifique-se de ter Python instalado em sua máquina.
 2. Navegue até a pasta desejada e execute o arquivo Python correspondente:
    ```bash
-   python agenda_professores.py
+   python agenda_professor.py
