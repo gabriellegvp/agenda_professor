@@ -13,3 +13,9 @@ Calendário Integrado: Visualização semanal e mensal das atividades planejadas
 Avisos e Notificações: Alertas para prazos e compromissos importantes.
 
 Armazenamento de Notas e Presenças: Controle simples e acessível para o acompanhamento do desempenho dos alunos.
+
+## Como Executar
+1. Certifique-se de ter Python instalado em sua máquina.
+2. Navegue até a pasta desejada e execute o arquivo Python correspondente:
+   ```bash
+   python agenda_professores.py
